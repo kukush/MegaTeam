@@ -23,12 +23,11 @@
         <EditText
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/editText"
-            android:layout_marginTop="162dp"
+            android:id="@+id/editTextNick"
             android:hint="Your Nickname"
-            android:layout_alignParentTop="true"
+            android:layout_below="@+id/textView"
             android:layout_alignParentStart="true"
-            android:layout_alignParentEnd="true" />
+            android:layout_alignEnd="@+id/textView" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -36,28 +35,37 @@
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:text="Welcome to SmartieTalkie! Please enter your nickname and choose what to do:"
             android:id="@+id/textView"
-            android:layout_marginBottom="64dp"
-            android:layout_alignBottom="@+id/editText"
-            android:layout_alignParentStart="true" />
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="59dp" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Start a new group"
             android:id="@+id/buttonStart"
-            android:layout_below="@+id/editText"
+            android:layout_below="@+id/editTextNick"
             android:layout_alignParentStart="true"
-            android:layout_marginTop="32dp"
+            android:layout_alignEnd="@+id/editTextNick" />
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Join a new Group"
+            android:id="@+id/buttonJoin"
+            android:layout_below="@+id/buttonStart"
+            android:layout_alignParentStart="true"
             android:layout_alignParentEnd="true" />
 
         <Button
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Join an existing Group"
-            android:id="@+id/buttonJoin"
-            android:layout_below="@+id/buttonStart"
+            android:text="No Group Configured"
+            android:id="@+id/buttonUse"
+            android:layout_below="@+id/buttonJoin"
             android:layout_alignParentStart="true"
-            android:layout_alignParentEnd="true" />
+            android:layout_alignEnd="@+id/buttonJoin"
+            android:enabled="false" />
     </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>

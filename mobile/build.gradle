@@ -6,16 +6,23 @@ android {
 
     defaultConfig {
         applicationId "com.example.root.megateam"
-        minSdkVersion 21
+        minSdkVersion 17
         targetSdkVersion 23
         versionCode 1
         versionName "1.0"
+        multiDexEnabled = true
     }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
+    }
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+        exclude 'META-INF/LICENSE-FIREBASE.txt'
+        exclude 'META-INF/NOTICE'
     }
 }
 
@@ -26,4 +33,6 @@ dependencies {
     compile 'com.android.support:appcompat-v7:23.1.0'
     compile 'com.google.android.gms:play-services:8.3.0'
     compile 'com.android.support:design:23.1.0'
+    compile 'com.firebase:firebase-client-android:2.4.0+'
+    compile 'com.android.support:multidex:1.0.0'
 }
