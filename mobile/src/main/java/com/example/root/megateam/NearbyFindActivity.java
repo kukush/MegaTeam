@@ -171,11 +171,20 @@ public class NearbyFindActivity extends AppCompatActivity implements GoogleApiCl
                 Gson gson = new Gson();
                 String j = gson.toJson(people);
 
+
+
+                GoogleApiClient wearGoogleApiClient;
+                wearGoogleApiClient = new GoogleApiClient.Builder(NearbyFindActivity.this)
+                        .addApi(Wearable.API)
+                        .addConnectionCallbacks(NearbyFindActivity.this)
+                        .addOnConnectionFailedListener(NearbyFindActivity.this)
+                        .build();
+
                 PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/people");
                 putDataMapReq.getDataMap().putString("group",j);
                 PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
                 PendingResult<DataApi.DataItemResult> pendingResult =
-                        Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);
+                        Wearable.DataApi.putDataItem(wearGoogleApiClient, putDataReq);
 
             }
         });
