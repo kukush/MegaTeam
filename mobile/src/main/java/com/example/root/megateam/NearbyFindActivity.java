@@ -1,10 +1,11 @@
 package com.example.root.megateam;
 
-import android.Manifest;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -12,8 +13,10 @@ import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
+import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AppCompatActivity;
-import android.util.Base64;
+import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -37,14 +40,8 @@ import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.PutDataMapRequest;
 import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
-import com.google.gson.Gson;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.Serializable;
 import java.util.ArrayList;
 
 public class NearbyFindActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
@@ -80,12 +77,18 @@ public class NearbyFindActivity extends AppCompatActivity implements GoogleApiCl
         nickName = intent.getStringExtra(Constants.PREF_NICKNAME);
         iAmHost = intent.getBooleanExtra(Constants.PREF_IS_STARTING_GROUP, false);
 
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addApi(Nearby.MESSAGES_API)
-                .addApi(Wearable.API)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .build();
+
+        try {
+            mGoogleApiClient = new GoogleApiClient.Builder(this)
+                    .addApi(Nearby.MESSAGES_API)
+                    .addApiIfAvailable(Wearable.API)
+                    .addConnectionCallbacks(this)
+                    .addOnConnectionFailedListener(this)
+                    .build();
+
+        }catch (Exception x) {
+            x.printStackTrace();
+        }
 
 
         publishName = (iAmHost ? "H§" + nickName + "§" + group : "U§" + nickName + "§none");
@@ -159,6 +162,8 @@ public class NearbyFindActivity extends AppCompatActivity implements GoogleApiCl
             @Override
             public void onClick(View v) {
 
+                Toast.makeText(NearbyFindActivity.this, "Grouo '" + group + "' created!", Toast.LENGTH_LONG).show();
+
 
                 SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(NearbyFindActivity.this);
                 SharedPreferences.Editor editor = preferences.edit();
@@ -192,13 +197,28 @@ public class NearbyFindActivity extends AppCompatActivity implements GoogleApiCl
                 }
 
                 PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/people");
-                putDataMapReq.getDataMap().putString("group",j);
+                putDataMapReq.getDataMap().putString("group", j);
                 PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
                 PendingResult<DataApi.DataItemResult> pendingResult =
                         Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);
 
+
+
+
+                /*editor.putString("serializedGroup", j);
+                editor.commit();*/
+
+                // to check notification
+                DispayNotification();
+                if (NotificationClass.check_members(people)) {
+                    SendNotificationtoWear();
+                }
+                ///////////////////////////
+
             }
         });
+
+        //startService(new Intent(this, GPSService.class));
 
     }
 
@@ -347,7 +367,89 @@ public class NearbyFindActivity extends AppCompatActivity implements GoogleApiCl
     }
 
 
+    protected void DispayNotification() {
 
+        // Invoking the default notification service
+        NotificationManager myNotificationManager;
+        int notificationIdOne = 111;
+        int notificationIdTwo = 112;
+        int numMessagesOne = 0;
+        NotificationCompat.Builder  mBuilder = new NotificationCompat.Builder(this);
+        mBuilder.setContentTitle("New Message with explicit intent");
+        mBuilder.setContentText("New message  to your wear ");
+
+        mBuilder.setTicker("Explicit: Newotification Received!");
+        mBuilder.setSmallIcon(R.drawable.abc_btn_check_material);
+        // Increase notification number every time a new notification arrives
+        mBuilder.setNumber(++numMessagesOne);
+        // Creates an explicit intent for an Activity in your app
+        Intent resultIntent = new Intent(this, NotificationClass.class);
+        resultIntent.putExtra("notificationId", notificationIdOne);
+
+        //This ensures that navigating backward from the Activity leads out of the app to Home page
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+
+        // Adds the back stack for the Intent
+
+        stackBuilder.addParentStack(NotificationClass.class);
+        // Adds the Intent that starts the Activity to the top of the stack
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(
+                        0,
+                        PendingIntent.FLAG_ONE_SHOT //can only be used once
+                );
+        // start the activity when the user clicks the notification text
+        mBuilder.setContentIntent(resultPendingIntent);
+        myNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+        // pass the Notification object to the system
+        myNotificationManager.notify(notificationIdOne, mBuilder.build());
+    }
+
+    public void SendNotificationtoWear()
+    {int notificationId = 001;
+        int notificationIdTwo = 112;
+        boolean  eventId=true;
+// Build intent for notification content
+        Intent viewIntent = new Intent(this, NotificationClass.class);
+        viewIntent.putExtra("notificationIdTwo", eventId);
+        PendingIntent viewPendingIntent =
+                PendingIntent.getActivity(this, 0, viewIntent, 0);
+//////////////////////////////////////////
+        Intent actionIntent = new Intent(this, MapActivity.class);
+        PendingIntent actionPendingIntent =
+                PendingIntent.getActivity(this, 0, actionIntent,
+                        PendingIntent.FLAG_UPDATE_CURRENT);
+
+
+// Create the action
+        NotificationCompat.Action action =
+                new NotificationCompat.Action.Builder(R.drawable.ic_cast_off_light,
+                        getString(R.string.accept), actionPendingIntent)
+                        .build();
+        /////////////////////////////
+        NotificationCompat.Builder notificationBuilder =
+                (NotificationCompat.Builder) new NotificationCompat.Builder(this)
+                        .setSmallIcon(R.drawable.notification_template_icon_bg )
+                        .setContentTitle("Group Member left")
+                        .setContentText("Show Map")
+                        .setContentIntent(viewPendingIntent);
+
+
+
+
+
+
+
+// Get an instance of the NotificationManager service
+        NotificationManagerCompat notificationManager =
+                NotificationManagerCompat.from(this);
+
+// Build the notification and issues it with notification manager.
+        notificationManager.notify(notificationId, notificationBuilder.build());
+
+    }
 
 
 }

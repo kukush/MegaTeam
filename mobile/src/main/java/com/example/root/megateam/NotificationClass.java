@@ -16,7 +16,7 @@ import com.google.android.gms.maps.model.LatLng;
 import java.util.ArrayList;
 import java.util.List;
 
-public class notification extends Activity {
+public class NotificationClass extends Activity {
 
     @Override
     public void onCreate(Bundle savedInstanceState)
@@ -42,7 +42,7 @@ public class notification extends Activity {
         myNotificationManager.cancel(id);
     }
 
-    private  static List<Person> mData = new ArrayList<Person>();
+    /*private  static List<Person> mData = new ArrayList<Person>();
     public void setupData() {
         LatLng loc1= new LatLng(+34.67,-50.90);
         mData.add(new Person("kukush","ku123",loc1));
@@ -52,10 +52,14 @@ public class notification extends Activity {
         mData.add(new Person("luka", "lu123", loc3));
         LatLng loc4= new LatLng(+34.67,-56.90);
         mData.add(new Person("Admin", "lu123", loc3));
-    }
-    public static   boolean check_members()
+    }*/
 
-    {   int x= 10; int y =0;
+    public static boolean check_members(ArrayList<Person> mData )
+
+    {
+
+
+        int x= 10; int y =0;
         int[] dis = new int[3] ;
         dis[0] = 1;    dis[1] = 2;  dis[2] = 3;
         // Person item = mData.get().getNickname();
@@ -69,16 +73,16 @@ public class notification extends Activity {
         for (int i = 0; i < mData.size(); i++)
         {       /// set the point of ref as  Admin
             if(mData .get(i).getNickname().equals("Admin")) {
-                lat1 = mData.get(i).getPosition().latitude;
-                lont1 = mData.get(i).getPosition().longitude;
+                lat1 = mData.get(i).getLat();
+                lont1 = mData.get(i).getLon();
             }
             else  {
-                lat2=mData.get(i).getPosition().latitude;
-                lng2= mData.get(i).getPosition().longitude;
+                lat2=mData.get(i).getLat();
+                lng2= mData.get(i).getLon();
             }
-            double distance=  DistanceCalculator(lat1,lont1,lat2,lng2,"M");
+            double distance=  DistanceCalculator(lat1,lont1,lat2,lng2,"K");
 
-            if(distance>100) {return false ;}
+            if(distance>0.005) {return false ;}
 
         }
         return  result;
