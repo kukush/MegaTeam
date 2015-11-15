@@ -1,7 +1,9 @@
 package com.example.root.megateam.model;
 
 
+
 import com.google.android.gms.maps.model.LatLng;
+
 
 /**
  * Created by fra on 14/11/15.
@@ -10,6 +12,8 @@ public class Person {
     public String getNickname() {
         return nickname;
     }
+
+    public  Person() {}
 
     public String getUniquieId() {
         return uniquieId;
@@ -42,7 +46,13 @@ public class Person {
         this.uniquieId = uniquieId;
         this.position = position;
     }
+
+    @Override
+    public String toString() {
+        return "Person{" +
+                "nickname='" + nickname + '\'' +
+                ", uniquieId='" + uniquieId + '\'' +
+                ", position=" + position +
+                '}';
+    }
 }
-
-
-
