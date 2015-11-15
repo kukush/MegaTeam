@@ -1,6 +1,5 @@
 package com.example.root.megateam.model;
 
-import android.location.Location;
 import android.util.Base64;
 
 import java.io.ByteArrayInputStream;

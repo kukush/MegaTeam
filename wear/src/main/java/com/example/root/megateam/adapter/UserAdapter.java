@@ -4,14 +4,13 @@ package com.example.root.megateam.adapter;
  * Created by root on 11/15/15.
  */
 
-import android.content.Context;
 import android.support.wearable.view.WearableListView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.example.root.megateam.Person;
+import com.example.root.megateam.model.Person;
 import com.example.root.megateam.R;
 
 import java.util.List;

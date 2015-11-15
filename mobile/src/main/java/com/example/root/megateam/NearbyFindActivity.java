@@ -13,6 +13,7 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
@@ -38,6 +39,12 @@ import com.google.android.gms.wearable.PutDataRequest;
 import com.google.android.gms.wearable.Wearable;
 import com.google.gson.Gson;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class NearbyFindActivity extends AppCompatActivity implements GoogleApiClient.ConnectionCallbacks,
@@ -75,6 +82,7 @@ public class NearbyFindActivity extends AppCompatActivity implements GoogleApiCl
 
         mGoogleApiClient = new GoogleApiClient.Builder(this)
                 .addApi(Nearby.MESSAGES_API)
+                .addApi(Wearable.API)
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
@@ -168,23 +176,26 @@ public class NearbyFindActivity extends AppCompatActivity implements GoogleApiCl
 
                 myFirebaseRef.child("groups").child(group).setValue(people);
 
-                Gson gson = new Gson();
-                String j = gson.toJson(people);
 
-
-
-                GoogleApiClient wearGoogleApiClient;
+                /*GoogleApiClient wearGoogleApiClient;
                 wearGoogleApiClient = new GoogleApiClient.Builder(NearbyFindActivity.this)
                         .addApi(Wearable.API)
                         .addConnectionCallbacks(NearbyFindActivity.this)
                         .addOnConnectionFailedListener(NearbyFindActivity.this)
-                        .build();
+                        .build();*/
+
+                String j = null;
+                try {
+                    j = Constants.toString(people);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
 
                 PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/people");
                 putDataMapReq.getDataMap().putString("group",j);
                 PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
                 PendingResult<DataApi.DataItemResult> pendingResult =
-                        Wearable.DataApi.putDataItem(wearGoogleApiClient, putDataReq);
+                        Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);
 
             }
         });
@@ -334,5 +345,10 @@ public class NearbyFindActivity extends AppCompatActivity implements GoogleApiCl
     public void onConnectionFailed(ConnectionResult connectionResult) {
         Log.d(Constants.TAG, "Connection Failed");
     }
+
+
+
+
+
 }
 

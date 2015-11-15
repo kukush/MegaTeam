@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.wearable.activity.WearableActivity;
 import android.support.wearable.view.DismissOverlayView;
 
+import com.example.root.megateam.model.Person;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
@@ -27,10 +28,9 @@ public class MapActivity extends WearableActivity implements OnMapReadyCallback,
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
         Intent intent = getIntent();
-        String pos = intent.getStringExtra("Location");
-        String[] latlong =  pos.split(",");
-        double latitude = Double.parseDouble(latlong[0]);
-        double longitude = Double.parseDouble(latlong[1]);
+        Person person = (Person) intent.getSerializableExtra("person");
+        double latitude = person.getLat();
+        double longitude = person.getLon();
         this.position = new LatLng(latitude, longitude);
         mDismissOverlay =
                 (DismissOverlayView) findViewById(R.id.dismiss_overlay);
