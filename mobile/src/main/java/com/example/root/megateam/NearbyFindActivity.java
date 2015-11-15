@@ -25,12 +25,18 @@ import com.example.root.megateam.model.Person;
 import com.firebase.client.Firebase;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.PendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.nearby.Nearby;
 import com.google.android.gms.nearby.messages.Message;
 import com.google.android.gms.nearby.messages.MessageListener;
+import com.google.android.gms.wearable.DataApi;
+import com.google.android.gms.wearable.PutDataMapRequest;
+import com.google.android.gms.wearable.PutDataRequest;
+import com.google.android.gms.wearable.Wearable;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
 
@@ -115,6 +121,13 @@ public class NearbyFindActivity extends AppCompatActivity implements GoogleApiCl
                             ((TextView) findViewById(R.id.textViewGroup)).setText(group);
                             NearbyFindActivity.this.group = group;
 
+                            //??
+                            SharedPreferences preferences = PreferenceManager.getDefaultSharedPreferences(NearbyFindActivity.this);
+                            SharedPreferences.Editor editor = preferences.edit();
+                            editor.putBoolean(Constants.PREF_IS_STARTING_GROUP, iAmHost);
+                            editor.putString(Constants.PREF_GROUP_NAME, group);
+                            editor.commit();
+
                             Toast.makeText(NearbyFindActivity.this, "Found group '" + group + "'", Toast.LENGTH_LONG).show();
                         }
 
@@ -154,6 +167,16 @@ public class NearbyFindActivity extends AppCompatActivity implements GoogleApiCl
 
 
                 myFirebaseRef.child("groups").child(group).setValue(people);
+
+                Gson gson = new Gson();
+                String j = gson.toJson(people);
+
+                PutDataMapRequest putDataMapReq = PutDataMapRequest.create("/people");
+                putDataMapReq.getDataMap().putString("group",j);
+                PutDataRequest putDataReq = putDataMapReq.asPutDataRequest();
+                PendingResult<DataApi.DataItemResult> pendingResult =
+                        Wearable.DataApi.putDataItem(mGoogleApiClient, putDataReq);
+
             }
         });
 
