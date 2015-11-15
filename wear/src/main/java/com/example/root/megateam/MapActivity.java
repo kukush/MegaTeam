@@ -21,10 +21,17 @@ public class MapActivity extends WearableActivity implements OnMapReadyCallback,
     private DismissOverlayView mDismissOverlay;
     private static final LatLng SYDNEY = new LatLng(-33.85704, 151.21522);
     private GoogleMap mMap;
+    private LatLng position;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
+        Intent intent = getIntent();
+        String pos = intent.getStringExtra("Location");
+        String[] latlong =  pos.split(",");
+        double latitude = Double.parseDouble(latlong[0]);
+        double longitude = Double.parseDouble(latlong[1]);
+        this.position = new LatLng(latitude, longitude);
         mDismissOverlay =
                 (DismissOverlayView) findViewById(R.id.dismiss_overlay);
         mDismissOverlay.setIntroText(R.string.basic_wear_long_press_intro);
@@ -41,8 +48,13 @@ public class MapActivity extends WearableActivity implements OnMapReadyCallback,
         GoogleMapOptions options = new GoogleMapOptions();
         options.getZoomGesturesEnabled();
 
-        //display a mapof sydney
-        Uri gmmIntentUri = Uri.parse("geo:-33.85704,151.21522");
+
+        //display a map of sydney
+
+        String s1= Double.toString(latitude);
+        String s2 = Double.toString(longitude);
+        String toparse= "geo:" +s1+","+s2;
+        Uri gmmIntentUri = Uri.parse(toparse); //we should put the coordinates of a person
         Intent mapIntent = new Intent(Intent.ACTION_VIEW, gmmIntentUri);
         mapIntent.setPackage("com.google.android.apps.maps");
         if (mapIntent.resolveActivity(getPackageManager()) != null) {
@@ -55,9 +67,9 @@ public class MapActivity extends WearableActivity implements OnMapReadyCallback,
     @Override
     public void onMapReady(GoogleMap map) {
         mMap = map;
-        mMap.addMarker(new MarkerOptions().position(SYDNEY)
-                .title("Sydney Opera House"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(SYDNEY, 10));
+        mMap.addMarker(new MarkerOptions().position(position)
+                .title("your friend position"));
+        mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(position, 10));
         mMap.setOnMapLongClickListener(this);
     }
     @Override
