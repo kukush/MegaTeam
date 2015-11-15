@@ -1,9 +1,7 @@
 package com.example.root.megateam.model;
 
 
-
 import com.google.android.gms.maps.model.LatLng;
-
 
 /**
  * Created by fra on 14/11/15.
@@ -45,3 +43,6 @@ public class Person {
         this.position = position;
     }
 }
+
+
+
