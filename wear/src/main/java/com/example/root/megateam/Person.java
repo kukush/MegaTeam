@@ -2,8 +2,11 @@ package com.example.root.megateam;
 
 import com.google.android.gms.maps.model.LatLng;
 
+
+import com.google.android.gms.maps.model.LatLng;
+
 /**
- * Created by root on 11/14/15.
+ * Created by fra on 14/11/15.
  */
 public class Person {
     public String getNickname() {
@@ -42,4 +45,6 @@ public class Person {
         this.position = position;
     }
 }
+
+
 
