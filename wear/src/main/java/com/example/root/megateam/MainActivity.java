@@ -1,14 +1,19 @@
 package com.example.root.megateam;
 
-import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
+import android.provider.Contacts;
+import android.support.wearable.activity.WearableActivity;
 import android.support.wearable.view.WearableListView;
+import android.util.Log;
 
 import com.example.root.megateam.adapter.UserAdapter;
+import com.example.root.megateam.model.Constants;
+import com.example.root.megateam.model.Person;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.wearable.DataApi;
 import com.google.android.gms.wearable.DataEvent;
 import com.google.android.gms.wearable.DataEventBuffer;
@@ -17,11 +22,13 @@ import com.google.android.gms.wearable.DataMap;
 import com.google.android.gms.wearable.DataMapItem;
 import com.google.android.gms.wearable.Wearable;
 import com.google.gson.Gson;
+import com.google.gson.internal.LinkedTreeMap;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends Activity
+public class MainActivity extends WearableActivity
         implements WearableListView.ClickListener,
         DataApi.DataListener,
         GoogleApiClient.ConnectionCallbacks,
@@ -58,6 +65,14 @@ public class MainActivity extends Activity
                 .addOnConnectionFailedListener(this)
                 .build();
 
+        setAmbientEnabled();
+
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(this);
+        String previousGroup = settings.getString("group", null);
+        if(previousGroup!=null)
+            updateData(previousGroup);
+
+
 
     }
 
@@ -65,9 +80,9 @@ public class MainActivity extends Activity
     @Override
     public void onClick(WearableListView.ViewHolder v){
         Integer tag=(Integer) v.itemView.getTag();
-        Person item = mData.get(v.getPosition());
+        Person item = mData.get(v.getAdapterPosition());
         Intent mapIntent = new Intent(this,MapActivity.class);
-        mapIntent.putExtra("Location", item.getPosition());
+        mapIntent.putExtra("person", item);
         startActivity(mapIntent);
         // use this data to complete some action ...
     }
@@ -85,8 +100,13 @@ public class MainActivity extends Activity
     }*/
 
     public void updateData(String j) {
-        Gson gson = new Gson();
-        ArrayList<Person> people = gson.fromJson(j, ArrayList.class);
+        Log.d("WTT", "updateData - DATA=" + j);
+        ArrayList<Person> people = null;
+        try {
+            people = (ArrayList<Person>) Constants.fromString(j);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         for(int i=0; i<people.size(); i++) {
             mData.add(people.get(i));
@@ -105,33 +125,47 @@ public class MainActivity extends Activity
     @Override
     protected void onPause() {
         super.onPause();
-        Wearable.DataApi.removeListener(mGoogleApiClient, this);
-        mGoogleApiClient.disconnect();
+        //Wearable.DataApi.removeListener(mGoogleApiClient, this);
+        //mGoogleApiClient.disconnect();
     }
 
     @Override
     public void onTopEmptyRegionClick(){
+        Log.d("WTT", "onTopEmptyRegionClick");
     }
 
     @Override
     public void onConnected(Bundle bundle) {
+        Log.d("WTT", "onConnected");
         Wearable.DataApi.addListener(mGoogleApiClient, this);
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-
+        Log.d("WTT", "onConnectionSuspended");
     }
 
     @Override
     public void onDataChanged(DataEventBuffer dataEvents) {
+        Log.d("WTT", "onDataChanged");
         for (DataEvent event : dataEvents) {
             if (event.getType() == DataEvent.TYPE_CHANGED) {
                 // DataItem changed
                 DataItem item = event.getDataItem();
                 if (item.getUri().getPath().compareTo("/people") == 0) {
                     DataMap dataMap = DataMapItem.fromDataItem(item).getDataMap();
-                    updateData(dataMap.getString("group"));
+
+                    String data = dataMap.getString("group");
+
+
+                    SharedPreferences  preferences = PreferenceManager.getDefaultSharedPreferences(MainActivity.this);
+                    SharedPreferences.Editor editor = preferences.edit();
+                    editor.putString("group", data);
+                    editor.commit();
+
+
+
+                    updateData(data);
                 }
             } else if (event.getType() == DataEvent.TYPE_DELETED) {
                 // DataItem deleted
@@ -141,6 +175,6 @@ public class MainActivity extends Activity
 
     @Override
     public void onConnectionFailed(ConnectionResult connectionResult) {
-
+        Log.d("WTT", "onConnectionFailed");
     }
 }

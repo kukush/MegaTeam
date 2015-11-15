@@ -2,6 +2,7 @@ package com.example.root.megateam.model;
 
 
 
+
 import com.google.android.gms.maps.model.LatLng;
 
 import java.io.Serializable;
