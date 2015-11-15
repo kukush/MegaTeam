@@ -3,16 +3,18 @@ package com.example.root.megateam;
 /**
  * Created by Manuel ELO'O on 14/11/2015.
  */
-import android.os.Bundle;
-import android.widget.TextView;
+
 import android.app.Activity;
 import android.app.NotificationManager;
 import android.content.Context;
+import android.os.Bundle;
+import android.widget.TextView;
 
 import com.example.root.megateam.model.Person;
 import com.google.android.gms.maps.model.LatLng;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class notification extends Activity {
 
@@ -39,51 +41,50 @@ public class notification extends Activity {
         // remove the notification with the specific id
         myNotificationManager.cancel(id);
     }
+
+    private  static List<Person> mData = new ArrayList<Person>();
+    public void setupData() {
+        LatLng loc1= new LatLng(+34.67,-50.90);
+        mData.add(new Person("kukush","ku123",loc1));
+        LatLng loc2= new LatLng(+35.67,-56.90);
+        mData.add(new Person("bini", "bi123", loc2));
+        LatLng loc3= new LatLng(+36.67,-60.90);
+        mData.add(new Person("luka", "lu123", loc3));
+        LatLng loc4= new LatLng(+34.67,-56.90);
+        mData.add(new Person("Admin", "lu123", loc3));
+    }
     public static   boolean check_members()
-    {    int x= 10; int y =0;
+
+    {   int x= 10; int y =0;
         int[] dis = new int[3] ;
         dis[0] = 1;    dis[1] = 2;  dis[2] = 3;
+        // Person item = mData.get().getNickname();
+
+
         //DistanceCalculator()
         boolean  result  = true;
-        ArrayList<Person> aList = new ArrayList<Person>() ;
-        for(int a= 0 ; a<3 ;a++)
-        {
-            Person xx = new Person();
-            xx.setNickname("Admin");
-            aList.add(xx);}
 
+        double lat1=0.0;double lont1=0.0;double lat2 =0.0;double lng2=0.0;
         //  lat1 and lon1  is fixed
-        for (int i = 0; i < aList.size(); i++)
+        for (int i = 0; i < mData.size(); i++)
         {       /// set the point of ref as  Admin
-              /*  String  name=aList.get(i).getNickname();
-               if(name =="Admin")
-               { LatLng adminlatlog= aList.get(i).getPosition();
-                   double lat1=adminlatlog.latitude;
-                   double lng1= adminlatlog.longitude;
-               }
-             else  {
-                   double lat2=aList.get(i).getPosition().latitude;
-                   double lng2= aList.get(i).getPosition().longitude;
-                  }*/
-                   //if(aList .get(1).equals("Admin"))
-             /// x=DistanceCalculator(lat1, lng1, lat2, lng2, user1log)
+            if(mData .get(i).getNickname().equals("Admin")) {
+                lat1 = mData.get(i).getPosition().latitude;
+                lont1 = mData.get(i).getPosition().longitude;
+            }
+            else  {
+                lat2=mData.get(i).getPosition().latitude;
+                lng2= mData.get(i).getPosition().longitude;
+            }
+            double distance=  DistanceCalculator(lat1,lont1,lat2,lng2,"M");
 
-            if(x==0)
-            {    x= 10;
-            }
-            else{
-                y =dis[i];
-            }
-            if(y >  x)
-            { result = false;
-                break;
-            }
+            if(distance>100) {return false ;}
 
         }
         return  result;
     }
 
-    public double  DistanceCalculator(double lat1, double lon1, double lat2, double lon2, String unit)
+    public static double  DistanceCalculator(double lat1, double lon1, double lat2, double lon2, String unit)
     {
         double theta = lon1 - lon2;
         double dist = Math.sin(deg2rad(lat1)) * Math.sin(deg2rad(lat2)) + Math.cos(deg2rad(lat1)) * Math.cos(deg2rad(lat2)) * Math.cos(deg2rad(theta));
@@ -101,11 +102,11 @@ public class notification extends Activity {
 
 
     ///    This function converts decimal degrees to radians
-    private  double deg2rad(double deg) {
+    private static   double deg2rad(double deg) {
         return (deg * Math.PI / 180.0);
     }
     // This function converts radians to decimal degrees
-    private  double rad2deg(double rad) {
+    private static double rad2deg(double rad) {
         return (rad * 180 / Math.PI);
     }
 

@@ -1,6 +1,5 @@
 package com.example.root.megateam;
 
-import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -10,8 +9,6 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.NotificationManagerCompat;
-import android.support.v7.app.NotificationCompat;
-import android.support.v7.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -209,11 +206,10 @@ public class StartActivity extends AppCompatActivity {
         NotificationCompat.Builder notificationBuilder =
                 (NotificationCompat.Builder) new NotificationCompat.Builder(this)
                         .setSmallIcon(R.drawable.notification_template_icon_bg )
-                        .setContentTitle("Map")
+                        .setContentTitle("Group Member left")
                         .setContentText("Show Map")
-                         .setContentIntent(viewPendingIntent)
-                        .addAction(R.drawable.ic_cast_light,
-                                getString(R.string.app_name),actionPendingIntent);
+                         .setContentIntent(viewPendingIntent);
+
 
 
 
